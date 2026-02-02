@@ -1,26 +1,57 @@
-import { useState } from 'react';
-import { Link } from '@inertiajs/react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-    LayoutDashboard, Users, Baby, ClipboardList, 
-    Settings, LogOut, Menu, X, Heart, Bell 
-} from 'lucide-react';
+import { useState } from "react";
+import { Link } from "@inertiajs/react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+    LayoutDashboard,
+    Users,
+    Baby,
+    ClipboardList,
+    Settings,
+    LogOut,
+    Menu,
+    X,
+    Heart,
+    Bell,
+} from "lucide-react";
 
 export default function Authenticated({ user, header, children }) {
-    const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+    const [showingNavigationDropdown, setShowingNavigationDropdown] =
+        useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     const menuItems = [
-        { label: 'Dashboard', icon: <LayoutDashboard size={20} />, href: route('dashboard'), active: route().current('dashboard') },
-        { label: 'Data Balita', icon: <Baby size={20} />, href: '#', active: false },
-        { label: 'Pemeriksaan', icon: <ClipboardList size={20} />, href: '#', active: false },
-        { label: 'Kader & Staff', icon: <Users size={20} />, href: '#', active: false },
+        {
+            label: "Dashboard",
+            icon: <LayoutDashboard size={20} />,
+            href: route("dashboard"),
+            active: route().current("dashboard"),
+        },
+        {
+            label: "Data Balita",
+            icon: <Baby size={20} />,
+            href: route("balita.index"),
+            active: route().current("balita.index"),
+        },
+        {
+            label: "Pemeriksaan",
+            icon: <ClipboardList size={20} />,
+            href: "#",
+            active: false,
+        },
+        {
+            label: "Kader & Staff",
+            icon: <Users size={20} />,
+            href: "#",
+            active: false,
+        },
     ];
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] flex font-sans">
             {/* --- SIDEBAR --- */}
-            <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0`}>
+            <aside
+                className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0`}
+            >
                 <div className="h-full flex flex-col p-6">
                     {/* Logo */}
                     <div className="flex items-center gap-3 px-2 mb-10">
@@ -39,9 +70,9 @@ export default function Authenticated({ user, header, children }) {
                                 key={i}
                                 href={item.href}
                                 className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all ${
-                                    item.active 
-                                    ? 'bg-slate-900 text-white shadow-xl shadow-slate-200' 
-                                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                                    item.active
+                                        ? "bg-slate-900 text-white shadow-xl shadow-slate-200"
+                                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                                 }`}
                             >
                                 {item.icon}
@@ -57,10 +88,19 @@ export default function Authenticated({ user, header, children }) {
                                 {user.name.charAt(0)}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-black text-slate-900 truncate">{user.name}</p>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kader Posyandu</p>
+                                <p className="text-sm font-black text-slate-900 truncate">
+                                    {user.name}
+                                </p>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                    Kader Posyandu
+                                </p>
                             </div>
-                            <Link href={route('logout')} method="post" as="button" className="text-slate-400 hover:text-rose-600 transition">
+                            <Link
+                                href={route("logout")}
+                                method="post"
+                                as="button"
+                                className="text-slate-400 hover:text-rose-600 transition"
+                            >
                                 <LogOut size={18} />
                             </Link>
                         </div>
@@ -72,13 +112,14 @@ export default function Authenticated({ user, header, children }) {
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
                 {/* Top Navbar */}
                 <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-40">
-                    <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="lg:hidden text-slate-600 p-2 hover:bg-slate-100 rounded-xl">
+                    <button
+                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                        className="lg:hidden text-slate-600 p-2 hover:bg-slate-100 rounded-xl"
+                    >
                         {isSidebarOpen ? <X /> : <Menu />}
                     </button>
-                    
-                    <div className="flex-1 px-4 lg:px-0">
-                        {header}
-                    </div>
+
+                    <div className="flex-1 px-4 lg:px-0">{header}</div>
 
                     <div className="flex items-center gap-4">
                         <button className="relative p-2.5 text-slate-400 hover:bg-slate-50 rounded-xl transition">
@@ -86,12 +127,22 @@ export default function Authenticated({ user, header, children }) {
                             <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
                         </button>
                         <div className="h-8 w-[1px] bg-slate-200 mx-2 hidden sm:block"></div>
-                        <Link href={route('profile.edit')} className="flex items-center gap-3 group">
+                        <Link
+                            href={route("profile.edit")}
+                            className="flex items-center gap-3 group"
+                        >
                             <div className="text-right hidden sm:block">
-                                <p className="text-xs font-black text-slate-900 leading-none mb-1 group-hover:text-pink-600 transition">{user.name}</p>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Pengaturan Profil</p>
+                                <p className="text-xs font-black text-slate-900 leading-none mb-1 group-hover:text-pink-600 transition">
+                                    {user.name}
+                                </p>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                    Pengaturan Profil
+                                </p>
                             </div>
-                            <Settings className="text-slate-400 group-hover:rotate-90 transition-transform duration-500" size={20} />
+                            <Settings
+                                className="text-slate-400 group-hover:rotate-90 transition-transform duration-500"
+                                size={20}
+                            />
                         </Link>
                     </div>
                 </header>
