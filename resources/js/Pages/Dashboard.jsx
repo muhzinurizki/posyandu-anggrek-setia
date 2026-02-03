@@ -1,62 +1,93 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
-import { motion } from 'framer-motion';
-import { Baby, Activity, Users, Calendar, TrendingUp, ArrowRight, BellRing } from 'lucide-react';
+import { Head } from '@inertiajs/react';
+import { Users, Mars, Venus, Baby, ArrowUpRight, Activity } from 'lucide-react';
 
 export default function Dashboard({ auth, stats }) {
     return (
-        <AuthenticatedLayout user={auth.user} header={<h2 className="text-xl font-black text-slate-800">Pusat Kendali</h2>}>
+        <AuthenticatedLayout
+            user={auth.user}
+            header={<h2 className="text-xl font-black text-slate-800 uppercase tracking-tight">Ringkasan Sistem</h2>}
+        >
             <Head title="Dashboard" />
 
-            <div className="p-8 space-y-8 max-w-7xl mx-auto">
-                {/* --- STATS OVERVIEW --- */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    {[
-                        { label: 'Total Balita', value: stats.total_balita, icon: <Baby />, color: 'text-pink-600', bg: 'bg-pink-50' },
-                        { label: 'Kunjungan Bulan Ini', value: '45', icon: <Users />, color: 'text-blue-600', bg: 'bg-blue-50' },
-                        { label: 'Status Gizi Baik', value: '94%', icon: <Activity />, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-                        { label: 'Agenda Terdekat', value: '12 Feb', icon: <Calendar />, color: 'text-orange-600', bg: 'bg-orange-50' },
-                    ].map((s, i) => (
-                        <div key={i} className="bg-white p-6 rounded-[2rem] border border-slate-200/60 shadow-sm flex items-center gap-4 transition-transform hover:-translate-y-1">
-                            <div className={`${s.bg} ${s.color} p-4 rounded-2xl`}>{s.icon}</div>
-                            <div>
-                                <p className="text-2xl font-black text-slate-900 leading-none">{s.value}</p>
-                                <p className="text-xs font-bold text-slate-400 uppercase mt-1">{s.label}</p>
-                            </div>
-                        </div>
-                    ))}
+            <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+                
+                {/* --- WELCOME BANNER --- */}
+                <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-[3rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl shadow-slate-300">
+                    <div className="relative z-10">
+                        <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-2">
+                            Selamat Datang, {auth.user.name}! 👋
+                        </h1>
+                        <p className="text-slate-400 font-medium max-w-md leading-relaxed">
+                            Sistem Informasi Posyandu siap membantu Anda memantau tumbuh kembang anak-anak hari ini.
+                        </p>
+                    </div>
+                    {/* Dekorasi Abstract */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+                    <div className="absolute bottom-0 right-20 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl"></div>
                 </div>
 
-                <div className="grid lg:grid-cols-3 gap-8">
-                    {/* INFO AGENDA (Bento) */}
-                    <div className="lg:col-span-2 bg-slate-900 rounded-[3rem] p-10 text-white relative overflow-hidden group">
-                        <div className="relative z-10">
-                            <h3 className="text-3xl font-black mb-4">Posyandu Rutin & <br/>Pemberian Vitamin A</h3>
-                            <p className="text-slate-400 mb-8 max-w-md">Jadwal bulan ini akan dilaksanakan pada 12 Februari 2026. Pastikan stok vitamin A tersedia.</p>
-                            <Link href="#" className="inline-flex items-center gap-2 bg-pink-600 px-6 py-3 rounded-2xl font-bold hover:bg-pink-700 transition">
-                                Lihat Detail Agenda <ArrowRight size={18} />
-                            </Link>
+                {/* --- STATS GRID --- */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {/* Total Balita */}
+                    <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 hover:scale-105 transition-all">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="bg-indigo-50 p-4 rounded-2xl text-indigo-600">
+                                <Users size={24} />
+                            </div>
+                            <span className="flex items-center gap-1 text-emerald-500 font-bold text-xs bg-emerald-50 px-2 py-1 rounded-lg">
+                                <ArrowUpRight size={14} /> Aktif
+                            </span>
                         </div>
-                        <Calendar size={200} className="absolute -bottom-10 -right-10 text-white/5 group-hover:rotate-12 transition-transform duration-700" />
+                        <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Total Balita</p>
+                        <h3 className="text-3xl font-black text-slate-800 mt-1">{stats.total_balita}</h3>
                     </div>
 
-                    {/* QUICK ACCESS (Bento) */}
-                    <div className="bg-white rounded-[3rem] p-8 border border-slate-200/60 shadow-sm">
-                        <h4 className="font-black text-slate-800 mb-6 flex items-center gap-2">
-                            <BellRing size={20} className="text-pink-600" /> Notifikasi
-                        </h4>
-                        <div className="space-y-4">
-                            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                <p className="text-xs font-black text-pink-600 mb-1 uppercase">Sistem</p>
-                                <p className="text-sm font-bold text-slate-700 leading-snug">3 Balita baru telah terdaftar hari ini.</p>
-                            </div>
-                            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                <p className="text-xs font-black text-blue-600 mb-1 uppercase">Kesehatan</p>
-                                <p className="text-sm font-bold text-slate-700 leading-snug">Laporan bulanan Januari sudah siap diunduh.</p>
+                    {/* Laki-Laki */}
+                    <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 hover:scale-105 transition-all">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="bg-blue-50 p-4 rounded-2xl text-blue-600">
+                                <Mars size={24} />
                             </div>
                         </div>
+                        <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Laki-Laki</p>
+                        <h3 className="text-3xl font-black text-slate-800 mt-1">{stats.laki_laki}</h3>
+                    </div>
+
+                    {/* Perempuan */}
+                    <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 hover:scale-105 transition-all">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="bg-pink-50 p-4 rounded-2xl text-pink-600">
+                                <Venus size={24} />
+                            </div>
+                        </div>
+                        <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Perempuan</p>
+                        <h3 className="text-3xl font-black text-slate-800 mt-1">{stats.perempuan}</h3>
+                    </div>
+
+                    {/* Balita Baru */}
+                    <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 hover:scale-105 transition-all">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="bg-emerald-50 p-4 rounded-2xl text-emerald-600">
+                                <Baby size={24} />
+                            </div>
+                        </div>
+                        <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Bulan Ini</p>
+                        <h3 className="text-3xl font-black text-slate-800 mt-1">+{stats.baru_bulan_ini}</h3>
                     </div>
                 </div>
+
+                {/* --- PLACEHOLDER CHART SECTION --- */}
+                <div className="bg-white rounded-[3rem] p-8 border border-slate-100 shadow-2xl shadow-slate-200/50 flex flex-col items-center justify-center min-h-[300px]">
+                    <div className="bg-slate-50 p-6 rounded-full mb-4 text-slate-300">
+                        <Activity size={48} />
+                    </div>
+                    <h4 className="text-slate-800 font-black uppercase tracking-widest text-sm">Grafik Pertumbuhan</h4>
+                    <p className="text-slate-400 text-xs mt-2 text-center max-w-xs">
+                        Visualisasi rata-rata berat badan balita akan muncul di sini setelah modul pemeriksaan diaktifkan.
+                    </p>
+                </div>
+
             </div>
         </AuthenticatedLayout>
     );
