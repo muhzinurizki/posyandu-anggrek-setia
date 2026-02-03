@@ -1,270 +1,236 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm, router } from '@inertiajs/react';
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { Head, router, Link } from "@inertiajs/react";
 import { 
-    Plus, Search, Mars, Venus, Edit3, Trash2, 
-    MoreVertical, Eye, UserPlus, ArrowLeft, Filter,
-    ChevronRight, Info
-} from 'lucide-react';
-import { useState } from 'react';
-import Modal from '@/Components/Modal';
-import TextInput from '@/Components/TextInput';
-import InputLabel from '@/Components/InputLabel';
-import InputError from '@/Components/InputError';
-import SecondaryButton from '@/Components/SecondaryButton';
+    Search, Mars, Venus, Edit3, Trash2, 
+    UserPlus, Scale, Ruler, Calendar, 
+    Baby, MapPin, ChevronLeft, ChevronRight 
+} from "lucide-react";
+import { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 
-export default function Index({ auth, balitas }) {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editMode, setEditMode] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
+export default function Index({ auth, balitas, filters }) {
+    const [searchTerm, setSearchTerm] = useState(filters.search || "");
 
-    // Form Processing menggunakan Inertia useForm
-    const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm({
-        id: null,
-        nama_balita: '',
-        nik: '',
-        jenis_kelamin: '',
-        tanggal_lahir: '',
-        nama_ibu: '',
-        berat_badan_lahir: '',
-        tinggi_badan_lahir: '',
-        alamat: '',
-    });
+    // --- LOGIKA SEARCH (DEBOUNCE) ---
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            if (searchTerm !== (filters.search || "")) {
+                router.get(route("balita.index"), { search: searchTerm }, { preserveState: true, replace: true });
+            }
+        }, 500);
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchTerm]);
 
-    // Buka Modal Tambah
-    const openCreateModal = () => {
-        setEditMode(false);
-        reset();
-        clearErrors();
-        setIsModalOpen(true);
+    // --- LOGIKA HITUNG UMUR ---
+    const calculateAge = (birthDate) => {
+        if (!birthDate) return "0 Bulan";
+        const diff = new Date() - new Date(birthDate);
+        const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30.4375));
+        return `${months} Bulan`;
     };
 
-    // Buka Modal Edit
-    const openEditModal = (balita) => {
-        setEditMode(true);
-        clearErrors();
-        setData({
-            id: balita.id,
-            nama_balita: balita.nama_balita,
-            nik: balita.nik,
-            jenis_kelamin: balita.jenis_kelamin,
-            tanggal_lahir: balita.tanggal_lahir,
-            nama_ibu: balita.nama_ibu,
-            berat_badan_lahir: balita.berat_badan_lahir,
-            tinggi_badan_lahir: balita.tinggi_badan_lahir,
-            alamat: balita.alamat,
+    // --- LOGIKA DELETE ---
+    const deleteBalita = (balita) => {
+        Swal.fire({
+            title: 'Hapus Data?',
+            text: `Seluruh data "${balita.nama_balita}" akan dihapus permanen.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'YA, HAPUS',
+            cancelButtonText: 'BATAL',
+            customClass: {
+                popup: "rounded-[2rem] p-8 shadow-2xl",
+                confirmButton: "bg-rose-600 text-white px-8 py-3 rounded-xl font-black mx-2 hover:bg-rose-700 transition-all",
+                cancelButton: "bg-slate-100 text-slate-500 px-8 py-3 rounded-xl font-black mx-2 hover:bg-slate-200 transition-all",
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                router.delete(route("balita.destroy", balita.id), {
+                    onSuccess: () => Swal.fire({ 
+                        title: 'Terhapus!', 
+                        text: 'Data berhasil dibersihkan dari sistem.',
+                        icon: 'success', 
+                        timer: 1500, 
+                        showConfirmButton: false,
+                        customClass: { popup: "rounded-[2rem]" }
+                    })
+                });
+            }
         });
-        setIsModalOpen(true);
     };
-
-    // Submit Form (Handle Create & Update)
-    const submit = (e) => {
-        e.preventDefault();
-        if (editMode) {
-            put(route('balita.update', data.id), {
-                onSuccess: () => closeModal(),
-            });
-        } else {
-            post(route('balita.store'), {
-                onSuccess: () => closeModal(),
-            });
-        }
-    };
-
-    const closeModal = () => {
-        setIsModalOpen(false);
-        reset();
-    };
-
-    const deleteBalita = (id) => {
-        if (confirm('Apakah Anda yakin ingin menghapus data ini? Semua riwayat pemeriksaan juga akan terhapus.')) {
-            router.delete(route('balita.destroy', id));
-        }
-    };
-
-    // Filter pencarian sederhana di sisi client (opsional, server-side lebih baik untuk data besar)
-    const filteredBalitas = balitas.filter(b => 
-        b.nama_balita.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        b.nik.includes(searchTerm)
-    );
 
     return (
-        <AuthenticatedLayout
-            user={auth.user}
+        <AuthenticatedLayout 
+            user={auth.user} 
             header={<h2 className="text-xl font-black text-slate-800">Database Balita</h2>}
         >
             <Head title="Manajemen Balita" />
 
             <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
                 
-                {/* --- ACTION BAR --- */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm">
-                    <div className="relative w-full md:w-96">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                        <input 
-                            type="text" 
-                            placeholder="Cari nama balita atau NIK..." 
-                            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-pink-500 transition-all"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                {/* --- TOP BAR: SEARCH & ADD --- */}
+                <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white/80 backdrop-blur-md p-6 rounded-[2.5rem] border border-white shadow-xl shadow-slate-200/50">
+                    <div className="space-y-1 text-center md:text-left">
+                        <h1 className="text-2xl font-black text-slate-800 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-500">
+                            Daftar Anak
+                        </h1>
+                        <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Total: {balitas.total} Jiwa</p>
                     </div>
-                    <button 
-                        onClick={openCreateModal}
-                        className="w-full md:w-auto bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-pink-600 transition shadow-xl shadow-slate-200 active:scale-95"
-                    >
-                        <UserPlus size={20} /> Daftarkan Balita
-                    </button>
+                    
+                    <div className="flex flex-col md:flex-row w-full md:w-auto gap-4">
+                        <div className="relative group">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-pink-500 transition-colors" size={18} />
+                            <input
+                                type="text"
+                                placeholder="Cari Nama atau NIK..."
+                                className="w-full md:w-80 pl-12 pr-4 py-3.5 bg-slate-100/50 border-none rounded-2xl text-sm focus:ring-4 focus:ring-pink-500/10 transition-all font-medium"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <Link
+                            href={route("balita.create")}
+                            className="bg-slate-900 text-white px-8 py-3.5 rounded-2xl font-black text-[11px] uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-pink-600 transition-all shadow-xl active:scale-95"
+                        >
+                            <UserPlus size={18} /> Daftarkan Balita
+                        </Link>
+                    </div>
                 </div>
 
-                {/* --- TABLE SECTION --- */}
-                <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
+                {/* --- MAIN TABLE --- */}
+                <div className="bg-white rounded-[3rem] border border-slate-100 shadow-2xl shadow-slate-200/40 overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
-                                <tr className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50">
-                                    <th className="px-8 py-5">Nama Lengkap</th>
-                                    <th className="px-6 py-5">Identitas</th>
-                                    <th className="px-6 py-5">Orang Tua</th>
-                                    <th className="px-6 py-5 text-center">Aksi</th>
+                                <tr className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 bg-slate-50/50 border-b border-slate-100">
+                                    <th className="px-10 py-7">Profil Lengkap</th>
+                                    <th className="px-6 py-7">Kelahiran</th>
+                                    <th className="px-6 py-7 text-center">Fisik Awal</th>
+                                    <th className="px-6 py-7">Keluarga</th>
+                                    <th className="px-10 py-7 text-right">Opsi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
-                                {filteredBalitas.length > 0 ? filteredBalitas.map((item) => (
-                                    <tr key={item.id} className="group hover:bg-slate-50/50 transition-colors">
-                                        <td className="px-8 py-5">
-                                            <div className="flex items-center gap-4">
-                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm ${item.jenis_kelamin === 'L' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600'}`}>
-                                                    {item.jenis_kelamin}
+                                {balitas.data.length > 0 ? (
+                                    balitas.data.map((item) => (
+                                        <tr key={item.id} className="group hover:bg-slate-50/80 transition-all">
+                                            {/* Profil */}
+                                            <td className="px-10 py-6">
+                                                <div className="flex items-center gap-5">
+                                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner transition-transform group-hover:scale-110 ${item.jenis_kelamin === 'L' ? 'bg-blue-50 text-blue-500' : 'bg-pink-50 text-pink-500'}`}>
+                                                        {item.jenis_kelamin === 'L' ? <Mars size={24} strokeWidth={3} /> : <Venus size={24} strokeWidth={3} />}
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[13px] font-black text-slate-800 uppercase tracking-tight">{item.nama_balita}</p>
+                                                        <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md uppercase tracking-wider">NIK {item.nik}</span>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="text-sm font-black text-slate-800 group-hover:text-pink-600 transition">{item.nama_balita}</p>
-                                                    <p className="text-[10px] font-bold text-slate-400 uppercase">{item.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
+                                            </td>
+
+                                            {/* Usia */}
+                                            <td className="px-6 py-6">
+                                                <div className="flex flex-col gap-1">
+                                                    <div className="flex items-center gap-2 text-xs font-black text-slate-700">
+                                                        <Baby size={14} className="text-pink-500" /> {calculateAge(item.tanggal_lahir)}
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400">
+                                                        <Calendar size={12} /> {item.tanggal_lahir}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <p className="text-sm font-bold text-slate-700">{item.nik}</p>
-                                            <p className="text-[10px] font-medium text-slate-400 italic">Lahir: {item.tanggal_lahir}</p>
-                                        </td>
-                                        <td className="px-6 py-5 text-sm font-bold text-slate-600">
-                                            Bunda {item.nama_ibu}
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <div className="flex justify-center items-center gap-2">
-                                                <button onClick={() => openEditModal(item)} className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition" title="Edit Data">
-                                                    <Edit3 size={18} />
-                                                </button>
-                                                <button onClick={() => deleteBalita(item.id)} className="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition" title="Hapus Data">
-                                                    <Trash2 size={18} />
-                                                </button>
-                                                <button className="p-2.5 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition">
-                                                    <ChevronRight size={18} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                )) : (
+                                            </td>
+
+                                            {/* Fisik */}
+                                            <td className="px-6 py-6">
+                                                <div className="flex items-center justify-center gap-5 bg-slate-50/50 py-2 rounded-2xl border border-slate-100 shadow-sm">
+                                                    <div className="text-center">
+                                                        <p className="text-[8px] font-black text-slate-400 uppercase italic">Berat</p>
+                                                        <p className="text-xs font-black text-slate-700">{item.berat_badan_lahir} kg</p>
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <p className="text-[8px] font-black text-slate-400 uppercase italic">Tinggi</p>
+                                                        <p className="text-xs font-black text-slate-700">{item.tinggi_badan_lahir} cm</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            {/* Alamat & Ibu */}
+                                            <td className="px-6 py-6">
+                                                <p className="text-[11px] font-black text-slate-800 leading-none mb-1.5 uppercase">Bunda {item.nama_ibu}</p>
+                                                <div className="flex items-start gap-1 text-[10px] font-bold text-slate-400 max-w-[140px]">
+                                                    <MapPin size={10} className="mt-0.5 shrink-0" />
+                                                    <span className="truncate">{item.alamat}</span>
+                                                </div>
+                                            </td>
+
+                                            {/* Aksi */}
+                                            <td className="px-10 py-6 text-right">
+                                                <div className="flex justify-end items-center gap-2">
+                                                    <Link 
+                                                        href={route("balita.edit", item.id)} 
+                                                        className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
+                                                    >
+                                                        <Edit3 size={18} />
+                                                    </Link>
+                                                    <button 
+                                                        onClick={() => deleteBalita(item)} 
+                                                        className="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
                                     <tr>
-                                        <td colSpan="4" className="px-8 py-20 text-center text-slate-400 font-medium">
-                                            Tidak ada data balita ditemukan.
+                                        <td colSpan="5" className="px-8 py-32 text-center">
+                                            <div className="flex flex-col items-center opacity-30">
+                                                <div className="bg-slate-100 p-6 rounded-full mb-4"><Baby size={48} className="text-slate-400" /></div>
+                                                <p className="font-black tracking-[0.3em] uppercase text-xs text-slate-500">Data Balita Tidak Ditemukan</p>
+                                            </div>
                                         </td>
                                     </tr>
                                 )}
                             </tbody>
                         </table>
                     </div>
+                    
+                    {/* --- PAGINATION (NO EXTERNAL COMPONENT) --- */}
+                    <div className="px-10 py-8 bg-slate-50/30 border-t border-slate-50 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                            Menampilkan <span className="text-slate-900">{balitas.from || 0}</span> sampai <span className="text-slate-900">{balitas.to || 0}</span> dari <span className="text-slate-900">{balitas.total}</span> balita
+                        </div>
+                        
+                        <div className="flex flex-wrap items-center gap-2">
+                            {balitas.links.map((link, key) => {
+                                // Bersihkan label dari tag HTML (untuk tombol Previous/Next)
+                                const cleanLabel = link.label
+                                    .replace("&laquo; Previous", "«")
+                                    .replace("Next &raquo;", "»");
+
+                                return link.url === null ? (
+                                    <div key={key} className="px-4 py-2 text-[10px] font-black text-slate-300 bg-white border border-slate-100 rounded-xl opacity-50 cursor-not-allowed">
+                                        {cleanLabel}
+                                    </div>
+                                ) : (
+                                    <Link
+                                        key={key}
+                                        href={link.url}
+                                        className={`px-4 py-2 text-[10px] font-black rounded-xl border transition-all active:scale-90 ${
+                                            link.active
+                                                ? "bg-slate-900 border-slate-900 text-white shadow-lg shadow-slate-200"
+                                                : "bg-white border-slate-100 text-slate-500 hover:border-pink-500 hover:text-pink-500"
+                                        }`}
+                                    >
+                                        {cleanLabel}
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            {/* --- MODAL FORM (CREATE & EDIT) --- */}
-            <Modal show={isModalOpen} onClose={closeModal} maxWidth="2xl">
-                <form onSubmit={submit} className="p-8">
-                    <div className="flex justify-between items-center mb-8">
-                        <div>
-                            <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-                                {editMode ? 'Perbarui Data' : 'Daftarkan Balita'}
-                            </h2>
-                            <p className="text-sm text-slate-500 font-medium">Lengkapi informasi biodata balita di bawah ini.</p>
-                        </div>
-                        <div className={`p-4 rounded-3xl ${editMode ? 'bg-blue-50 text-blue-600' : 'bg-pink-50 text-pink-600'}`}>
-                            {editMode ? <Edit3 size={24}/> : <UserPlus size={24}/>}
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="md:col-span-2">
-                            <InputLabel value="Nama Lengkap Balita" className="font-bold text-slate-700" />
-                            <TextInput 
-                                className="w-full mt-1 border-slate-200 rounded-xl focus:ring-pink-500 focus:border-pink-500 py-3" 
-                                value={data.nama_balita} 
-                                onChange={e => setData('nama_balita', e.target.value)} 
-                                placeholder="Contoh: Arka Zayyan"
-                            />
-                            <InputError message={errors.nama_balita} />
-                        </div>
-
-                        <div>
-                            <InputLabel value="NIK Balita" className="font-bold text-slate-700" />
-                            <TextInput 
-                                className="w-full mt-1 border-slate-200 rounded-xl focus:ring-pink-500 focus:border-pink-500 py-3" 
-                                value={data.nik} 
-                                onChange={e => setData('nik', e.target.value)} 
-                                placeholder="16 Digit NIK"
-                            />
-                            <InputError message={errors.nik} />
-                        </div>
-
-                        <div>
-                            <InputLabel value="Jenis Kelamin" className="font-bold text-slate-700" />
-                            <select 
-                                className="w-full mt-1 border-slate-200 rounded-xl focus:ring-pink-500 focus:border-pink-500 py-3" 
-                                value={data.jenis_kelamin} 
-                                onChange={e => setData('jenis_kelamin', e.target.value)}
-                            >
-                                <option value="">Pilih Gender</option>
-                                <option value="L">Laki-laki</option>
-                                <option value="P">Perempuan</option>
-                            </select>
-                            <InputError message={errors.jenis_kelamin} />
-                        </div>
-
-                        <div>
-                            <InputLabel value="Tanggal Lahir" className="font-bold text-slate-700" />
-                            <TextInput 
-                                type="date"
-                                className="w-full mt-1 border-slate-200 rounded-xl focus:ring-pink-500 focus:border-pink-500 py-3 text-sm" 
-                                value={data.tanggal_lahir} 
-                                onChange={e => setData('tanggal_lahir', e.target.value)} 
-                            />
-                            <InputError message={errors.tanggal_lahir} />
-                        </div>
-
-                        <div>
-                            <InputLabel value="Nama Ibu Kandung" className="font-bold text-slate-700" />
-                            <TextInput 
-                                className="w-full mt-1 border-slate-200 rounded-xl focus:ring-pink-500 focus:border-pink-500 py-3" 
-                                value={data.nama_ibu} 
-                                onChange={e => setData('nama_ibu', e.target.value)} 
-                                placeholder="Nama Lengkap Ibu"
-                            />
-                            <InputError message={errors.nama_ibu} />
-                        </div>
-                    </div>
-
-                    <div className="mt-10 flex gap-3 justify-end">
-                        <SecondaryButton onClick={closeModal} className="rounded-xl px-6 py-3 font-bold border-none bg-slate-100 hover:bg-slate-200 transition">
-                            Batal
-                        </SecondaryButton>
-                        <button 
-                            type="submit" 
-                            disabled={processing}
-                            className={`px-8 py-3 rounded-xl font-bold text-white transition-all shadow-lg active:scale-95 ${editMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-pink-600 hover:bg-pink-700'}`}
-                        >
-                            {processing ? 'Memproses...' : editMode ? 'Simpan Perubahan' : 'Daftarkan Balita'}
-                        </button>
-                    </div>
-                </form>
-            </Modal>
         </AuthenticatedLayout>
     );
 }

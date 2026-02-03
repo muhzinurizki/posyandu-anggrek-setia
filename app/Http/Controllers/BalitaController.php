@@ -6,25 +6,22 @@ use App\Models\Balita;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class BalitaController extends Controller
 {
     /**
-     * Menampilkan Dashboard Utama (Ringkasan Statistik)
+     * Dashboard: Statistik Ringkas
      */
     public function dashboard()
     {
-        // Mengambil data statistik secara efisien
         $stats = [
             'total_balita' => Balita::count(),
             'laki_laki'    => Balita::where('jenis_kelamin', 'L')->count(),
             'perempuan'    => Balita::where('jenis_kelamin', 'P')->count(),
-            // Contoh data gizi (ini bisa dibuat dinamis nanti setelah modul pemeriksaan siap)
-            'gizi_baik'    => '94%', 
+            'gizi_baik'    => '94%', // KMS logic placeholder
         ];
 
-        // Mengambil 5 aktivitas pendaftaran terbaru untuk feed dashboard
         $recent_activities = Balita::latest()->take(5)->get();
 
         return Inertia::render('Dashboard', [
@@ -34,71 +31,118 @@ class BalitaController extends Controller
     }
 
     /**
-     * Menampilkan Halaman Manajemen Data Balita (Tabel & Filter)
+     * Index: List Data dengan Pencarian & Pagination
      */
     public function index(Request $request)
     {
-        // Fitur Pencarian (Opsional, sangat berguna jika data sudah banyak)
-        $query = Balita::query();
-
-        if ($request->has('search')) {
-            $query->where('nama_balita', 'like', '%' . $request->search . '%')
-                  ->orWhere('nik', 'like', '%' . $request->search . '%');
-        }
-
         return Inertia::render('Balita/Index', [
-            'balitas' => $query->latest()->get(),
+            'balitas' => Balita::query()
+                ->when($request->search, function ($query, $search) {
+                    $query->where('nama_balita', 'like', "%{$search}%")
+                          ->orWhere('nik', 'like', "%{$search}%");
+                })
+                ->latest()
+                ->paginate(10)
+                ->withQueryString(),
             'filters' => $request->only(['search'])
         ]);
     }
 
     /**
-     * Menyimpan data balita baru ke database
+     * Create: Menampilkan Form Pendaftaran (Halaman Mandiri)
+     */
+    public function create()
+    {
+        return Inertia::render('Balita/Create');
+    }
+
+    /**
+     * Store: Proses Simpan Data
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama_balita'       => 'required|string|max:255',
-            'nik'               => 'required|string|size:16|unique:balitas,nik',
-            'jenis_kelamin'     => 'required|in:L,P',
-            'tanggal_lahir'     => 'required|date',
-            'nama_ibu'          => 'required|string|max:255',
-            'berat_badan_lahir' => 'required|numeric|min:0',
-            'tinggi_badan_lahir'=> 'required|numeric|min:0',
-            'alamat'            => 'required|string',
+            'nama_balita'        => 'required|string|max:255',
+            'nik'                => 'required|string|size:16|unique:balitas,nik',
+            'jenis_kelamin'      => 'required|in:L,P',
+            'tanggal_lahir'      => 'required|date',
+            'nama_ibu'           => 'required|string|max:255',
+            'berat_badan_lahir'  => 'required|numeric|min:0',
+            'tinggi_badan_lahir' => 'required|numeric|min:0',
+            'alamat'             => 'required|string',
         ], [
-            // Custom Error Messages agar UI lebih ramah
             'nik.unique' => 'NIK ini sudah terdaftar dalam sistem.',
             'nik.size'   => 'NIK harus berjumlah 16 digit.',
             'required'   => 'Kolom :attribute wajib diisi.'
         ]);
 
+        Balita::create($validated);
+        
+        return Redirect::route('balita.index')->with('message', 'Data balita berhasil didaftarkan!');
+    }
+
+    /**
+     * Edit: Menampilkan Form Edit (Halaman Mandiri)
+     */
+    public function edit($id)
+    {
+        $balita = Balita::findOrFail($id);
+
+        return Inertia::render('Balita/Edit', [
+            'balita' => $balita
+        ]);
+    }
+
+    /**
+     * Update: Proses Perbarui Data
+     */
+    public function update(Request $request, $id)
+    {
+        $balita = Balita::findOrFail($id);
+
+        $validated = $request->validate([
+            'nama_balita'        => 'required|string|max:255',
+            'nik'                => [
+                'required',
+                'string',
+                'size:16',
+                Rule::unique('balitas')->ignore($balita->id),
+            ],
+            'jenis_kelamin'      => 'required|in:L,P',
+            'tanggal_lahir'      => 'required|date',
+            'nama_ibu'           => 'required|string|max:255',
+            'berat_badan_lahir'  => 'required|numeric|min:0',
+            'tinggi_badan_lahir' => 'required|numeric|min:0',
+            'alamat'             => 'required|string',
+        ]);
+
+        $balita->update($validated);
+
+        return Redirect::route('balita.index')->with('message', 'Data balita berhasil diperbarui!');
+    }
+
+    /**
+     * Destroy: Hapus Data
+     */
+    public function destroy($id)
+    {
         try {
-            Balita::create($validated);
-            
-            return Redirect::route('balita.index')->with('message', 'Data balita berhasil ditambahkan!');
+            $balita = Balita::findOrFail($id);
+            $balita->delete();
+
+            return Redirect::route('balita.index')->with('message', 'Data balita berhasil dihapus.');
         } catch (\Exception $e) {
-            return Redirect::back()->withErrors(['error' => 'Terjadi kesalahan saat menyimpan data.']);
+            return Redirect::back()->with('error', 'Gagal menghapus data.');
         }
     }
 
     /**
-     * Menghapus data balita
-     */
-    public function destroy($id)
-    {
-        $balita = Balita::findOrFail($id);
-        $balita->delete();
-
-        return Redirect::route('balita.index')->with('message', 'Data balita berhasil dihapus.');
-    }
-
-    /**
-     * Menampilkan detail balita (untuk Modul Pemeriksaan/KMS nantinya)
+     * Show: Detail & Riwayat Pemeriksaan
      */
     public function show($id)
     {
-        $balita = Balita::with('pemeriksaans')->findOrFail($id);
+        // Jika belum ada relasi pemeriksaans, hapus part with() agar tidak error
+        $balita = Balita::findOrFail($id);
         
         return Inertia::render('Balita/Show', [
             'balita' => $balita
