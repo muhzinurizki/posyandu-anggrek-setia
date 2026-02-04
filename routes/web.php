@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BalitaController;
+use App\Http\Controllers\PemeriksaanController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -33,8 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Manajemen Balita: Menggunakan Resource agar otomatis mendukung Index, Create, Store, Edit, Update, Destroy
     // Saat ini kita fokus ke index, store, dan destroy sesuai kebutuhan modul
     Route::resource('balita', BalitaController::class);
-
-    // Modul Pemeriksaan / KMS (Placeholder untuk fitur selanjutnya)
+    Route::resource('pemeriksaan', PemeriksaanController::class);
     // Route::post('/pemeriksaan', [PemeriksaanController::class, 'store'])->name('pemeriksaan.store');
 
 });

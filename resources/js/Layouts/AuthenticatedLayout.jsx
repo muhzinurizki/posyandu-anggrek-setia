@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "@inertiajs/react";
 import { motion, AnimatePresence } from "framer-motion";
-import FlashMessages from '@/Components/FlashMessages';
+import FlashMessages from "@/Components/FlashMessages";
 import {
     LayoutDashboard,
     Users,
@@ -31,25 +31,28 @@ export default function Authenticated({ user, header, children }) {
             label: "Data Balita",
             icon: <Baby size={20} />,
             href: route("balita.index"),
-            active: route().current("balita.index"),
+            // Aktif hanya di halaman daftar & tambah balita
+            active:
+                route().current("balita.index") ||
+                route().current("balita.create"),
         },
         {
             label: "Pemeriksaan",
             icon: <ClipboardList size={20} />,
-            href: "#",
-            active: false,
+            href: route("pemeriksaan.index"), // Ubah dari balita.index ke pemeriksaan.index
+            active: route().current("pemeriksaan.*"),
         },
         {
             label: "Kader & Staff",
             icon: <Users size={20} />,
-            href: "#",
+            href: "#", // Tahap selanjutnya
             active: false,
         },
     ];
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] flex font-sans">
-          <FlashMessages />
+            <FlashMessages />
             {/* --- SIDEBAR --- */}
             <aside
                 className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0`}

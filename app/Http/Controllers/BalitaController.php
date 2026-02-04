@@ -139,10 +139,15 @@ class BalitaController extends Controller
   /**
    * Show: Detail & Riwayat Pemeriksaan
    */
-  public function show(Balita $balita)
+  public function show($id)
   {
-    return Inertia::render('Balita/Show', [
-      'balita' => $balita->load('pemeriksaans'), // Mengambil data balita + relasi pemeriksaan
+    // Ambil data balita DAN ikut sertakan (load) riwayat pemeriksaannya
+    $balita = Balita::with(['pemeriksaans' => function ($query) {
+      $query->latest('tgl_periksa'); // Urutkan dari yang terbaru
+    }])->findOrFail($id);
+
+    return inertia('Balita/Show', [
+      'balita' => $balita
     ]);
   }
 }
