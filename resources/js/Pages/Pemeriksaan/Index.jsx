@@ -1,177 +1,146 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link, router } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import { 
-    Plus, Search, Calendar, Scale, Ruler, Trash2, 
-    ChevronRight, Activity, Users, ClipboardCheck 
+    ClipboardList, 
+    Plus, 
+    Search, 
+    Eye, 
+    FileText, 
+    Calendar, 
+    Filter,
+    ChevronRight,
+    ArrowUpDown
 } from "lucide-react";
-import { useState, useEffect } from "react";
-import Swal from "sweetalert2";
 
-export default function Index({ auth, pemeriksaans, filters }) {
-    const [search, setSearch] = useState(filters.search || "");
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            router.get(route('pemeriksaan.index'), { search }, { preserveState: true, replace: true });
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [search]);
-
-    const handleDelete = (id) => {
-        Swal.fire({
-            title: 'Hapus Data?',
-            text: "Data pemeriksaan ini akan dihapus permanen!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#e11d48',
-            cancelButtonColor: '#64748b',
-            confirmButtonText: 'Ya, Hapus!',
-            cancelButtonText: 'Batal',
-            customClass: { popup: 'rounded-[2rem]' }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                router.delete(route('pemeriksaan.destroy', id));
-            }
-        });
-    };
-
+export default function Index({ auth, pemeriksaans }) {
     return (
-        <AuthenticatedLayout user={auth.user} header={<h2 className="text-xl font-black text-slate-800 uppercase tracking-tight">Log Aktivitas Posyandu</h2>}>
-            <Head title="Jurnal Pemeriksaan" />
-            
-            <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
-                
-                {/* --- STATS SUMMARY --- */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 flex items-center gap-5">
-                        <div className="bg-indigo-500 p-4 rounded-2xl text-white shadow-lg shadow-indigo-100">
-                            <ClipboardCheck size={24} />
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Periksa</p>
-                            <h4 className="text-2xl font-black text-slate-800">{pemeriksaans.total} <span className="text-xs text-slate-300 uppercase">Record</span></h4>
-                        </div>
+        <AuthenticatedLayout
+            user={auth.user}
+            header={
+                <div className="flex flex-col">
+                    <h2 className="text-xl font-bold text-slate-800 tracking-tight">Log Pemeriksaan</h2>
+                    <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mt-0.5">
+                        Daftar Riwayat Pemeriksaan Kesehatan Balita
+                    </p>
+                </div>
+            }
+        >
+            <Head title="Data Pemeriksaan" />
+
+            <div className="py-6 space-y-6">
+                {/* --- ACTION BAR --- */}
+                <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
+                    <div className="relative w-full md:w-96">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                        <input 
+                            type="text" 
+                            placeholder="Cari nama balita atau NIK..."
+                            className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
+                        />
                     </div>
-                    <div className="bg-slate-900 p-6 rounded-[2.5rem] text-white flex items-center gap-5 shadow-xl">
-                        <div className="bg-emerald-500 p-4 rounded-2xl shadow-lg shadow-emerald-900/20">
-                            <Activity size={24} />
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-black text-white/50 uppercase tracking-widest">Update Terakhir</p>
-                            <h4 className="text-lg font-bold">{pemeriksaans.data[0]?.balita.nama_balita || '-'}</h4>
-                        </div>
+                    
+                    <div className="flex items-center gap-3 w-full md:w-auto">
+                        <button className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-sm font-bold hover:bg-slate-50 transition-all shadow-sm">
+                            <Filter size={16} /> Filter
+                        </button>
+                        <Link
+                            href={route('pemeriksaan.create')}
+                            className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-md shadow-blue-200"
+                        >
+                            <Plus size={16} /> Input Data Baru
+                        </Link>
                     </div>
-                    <Link href={route('pemeriksaan.create')} className="bg-indigo-600 hover:bg-indigo-700 p-6 rounded-[2.5rem] text-white flex items-center justify-between group transition-all shadow-xl shadow-indigo-100">
-                        <div className="flex items-center gap-5">
-                            <div className="bg-white/20 p-4 rounded-2xl backdrop-blur-md">
-                                <Plus size={24} />
-                            </div>
-                            <span className="font-black uppercase text-xs tracking-[0.2em]">Tambah Data</span>
-                        </div>
-                        <ChevronRight className="group-hover:translate-x-2 transition-transform" />
-                    </Link>
                 </div>
 
-                {/* --- FILTER & SEARCH --- */}
-                <div className="bg-white p-4 rounded-[2rem] border border-slate-100 shadow-lg flex items-center px-8">
-                    <Search className="text-slate-300 mr-4" size={20} />
-                    <input 
-                        type="text" placeholder="Cari nama balita yang diperiksa..." 
-                        className="w-full border-none focus:ring-0 text-sm font-bold text-slate-600 placeholder:text-slate-300"
-                        value={search} onChange={e => setSearch(e.target.value)}
-                    />
-                </div>
-
-                {/* --- DATA TABLE --- */}
-                <div className="bg-white rounded-[3rem] border border-slate-100 shadow-2xl overflow-hidden">
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 bg-slate-50/50 border-b border-slate-50">
-                                <th className="px-10 py-6">Informasi Balita</th>
-                                <th className="px-6 py-6 text-center">Detail Fisik</th>
-                                <th className="px-6 py-6 text-center">Tanggal</th>
-                                <th className="px-10 py-6 text-right">Opsi</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-50">
-                            {pemeriksaans.data.length > 0 ? pemeriksaans.data.map((item) => (
-                                <tr key={item.id} className="hover:bg-indigo-50/30 transition-all group">
-                                    <td className="px-10 py-6">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-indigo-500 group-hover:text-white transition-all font-black text-xs">
-                                                {item.balita.nama_balita.substring(0, 2).toUpperCase()}
-                                            </div>
-                                            <div>
-                                                <Link href={route('balita.show', item.balita_id)} className="block font-black text-slate-800 uppercase text-sm hover:text-indigo-600 transition-colors">
-                                                    {item.balita.nama_balita}
+                {/* --- TABLE CARD --- */}
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-slate-50/50 border-b border-slate-200">
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                                        <div className="flex items-center gap-2">Tanggal Periksa <ArrowUpDown size={12} /></div>
+                                    </th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Balita / NIK</th>
+                                    <th className="px-6 py-4 text-center text-[11px] font-bold text-slate-500 uppercase tracking-wider">BB (Kg)</th>
+                                    <th className="px-6 py-4 text-center text-[11px] font-bold text-slate-500 uppercase tracking-wider">TB (Cm)</th>
+                                    <th className="px-6 py-4 text-center text-[11px] font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                                    <th className="px-6 py-4 text-right text-[11px] font-bold text-slate-500 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {pemeriksaans.data.length > 0 ? (
+                                    pemeriksaans.data.map((p) => (
+                                        <tr key={p.id} className="hover:bg-slate-50 transition-colors group">
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 bg-slate-100 text-slate-500 rounded-md group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
+                                                        <Calendar size={14} />
+                                                    </div>
+                                                    <span className="text-sm font-semibold text-slate-700">
+                                                        {new Date(p.tgl_periksa).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-bold text-slate-800 tracking-tight">{p.balita?.nama_balita}</span>
+                                                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-tighter">NIK: {p.balita?.nik}</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 text-center">
+                                                <span className="text-sm font-bold text-blue-600">{p.berat_badan}</span>
+                                            </td>
+                                            <td className="px-6 py-4 text-center">
+                                                <span className="text-sm font-bold text-slate-700">{p.tinggi_badan}</span>
+                                            </td>
+                                            <td className="px-6 py-4 text-center">
+                                                <span className="inline-flex items-center px-2 py-1 rounded-md bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase border border-emerald-100">
+                                                    Normal
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <Link 
+                                                    href={route('pemeriksaan.show', p.id)}
+                                                    className="inline-flex items-center justify-center p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all"
+                                                    title="Lihat Detail"
+                                                >
+                                                    <Eye size={18} />
                                                 </Link>
-                                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">NIK: {item.balita.nik}</span>
+                                                <Link 
+                                                    href={route('pemeriksaan.edit', p.id)}
+                                                    className="inline-flex items-center justify-center p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-md transition-all ml-1"
+                                                    title="Edit Data"
+                                                >
+                                                    <FileText size={18} />
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="6" className="px-6 py-20 text-center">
+                                            <div className="flex flex-col items-center">
+                                                <ClipboardList size={40} className="text-slate-200 mb-3" />
+                                                <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.2em]">Belum ada catatan pemeriksaan</p>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-6 text-center">
-                                        <div className="flex justify-center gap-3">
-                                            <div className="flex flex-col items-center bg-slate-50 px-3 py-2 rounded-xl min-w-[60px] border border-slate-100 group-hover:border-indigo-100">
-                                                <Scale size={14} className="text-indigo-400 mb-1" />
-                                                <span className="text-xs font-black text-slate-700">{item.berat_badan}kg</span>
-                                            </div>
-                                            <div className="flex flex-col items-center bg-slate-50 px-3 py-2 rounded-xl min-w-[60px] border border-slate-100 group-hover:border-pink-100">
-                                                <Ruler size={14} className="text-pink-400 mb-1" />
-                                                <span className="text-xs font-black text-slate-700">{item.tinggi_badan}cm</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-6 text-center">
-                                        <div className="inline-flex items-center gap-2 bg-slate-100 px-4 py-1.5 rounded-full text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                                            <Calendar size={12} />
-                                            {new Date(item.tgl_periksa).toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'})}
-                                        </div>
-                                    </td>
-                                    <td className="px-10 py-6 text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <Link href={route('balita.show', item.balita_id)} className="p-2 text-slate-300 hover:text-indigo-500 transition-colors">
-                                                <Eye size={18} />
-                                            </Link>
-                                            <button 
-                                                onClick={() => handleDelete(item.id)}
-                                                className="p-2 text-slate-300 hover:text-rose-500 transition-colors"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            )) : (
-                                <tr>
-                                    <td colSpan="4" className="py-20 text-center">
-                                        <div className="flex flex-col items-center opacity-20">
-                                            <ClipboardCheck size={64} />
-                                            <p className="mt-4 font-black uppercase text-xs tracking-[0.3em]">Data Masih Kosong</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* --- PAGINATION (Opsional) --- */}
-                {pemeriksaans.links && (
-                    <div className="flex justify-center mt-8 gap-2">
-                        {pemeriksaans.links.map((link, i) => (
-                            <Link
-                                key={i}
-                                href={link.url || "#"}
-                                dangerouslySetInnerHTML={{ __html: link.label }}
-                                className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${
-                                    link.active 
-                                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-200' 
-                                    : 'bg-white text-slate-400 hover:bg-slate-50'
-                                } ${!link.url && 'opacity-30 cursor-not-allowed'}`}
-                            />
-                        ))}
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
-                )}
+
+                    {/* --- PAGINATION PLACEHOLDER --- */}
+                    <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
+                        <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+                            Menampilkan {pemeriksaans.data.length} Data
+                        </p>
+                        <div className="flex gap-2">
+                             {/* Tambahkan komponen Pagination Anda di sini */}
+                        </div>
+                    </div>
+                </div>
             </div>
         </AuthenticatedLayout>
     );
