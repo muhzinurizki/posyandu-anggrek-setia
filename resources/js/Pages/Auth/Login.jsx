@@ -1,13 +1,8 @@
 import { useEffect } from 'react';
-import Checkbox from '@/Components/Checkbox';
-import GuestLayout from '@/Layouts/GuestLayout';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { Mail, Lock, LogIn, ArrowLeft, Heart, Sparkles } from 'lucide-react';
+import { Lock, User, ShieldCheck, Flower2, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import GuestLayout from '@/Layouts/GuestLayout'; // Pastikan import layout
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -28,156 +23,155 @@ export default function Login({ status, canResetPassword }) {
     };
 
     return (
-        <div className="min-h-screen bg-[#fafafa] flex flex-col md:flex-row font-sans selection:bg-pink-100 selection:text-pink-600">
-            <Head title="Masuk - Anggrek Setia" />
+        /* Hapus min-h-screen di sini agar menyatu dengan GuestLayout */
+        <div className="flex-1 flex flex-col md:flex-row font-sans overflow-hidden">
+            <Head title="Akses Petugas | Posyandu Anggrek Setia" />
 
-            {/* --- SISI KIRI: FORM --- */}
-            <motion.div 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-                className="w-full md:w-[450px] lg:w-[550px] bg-white p-8 md:p-16 flex flex-col justify-center relative z-10 shadow-2xl"
-            >
-                {/* Back to Home */}
-                <Link href="/" className="absolute top-8 left-8 flex items-center gap-2 text-slate-400 hover:text-pink-600 transition font-bold text-sm group">
-                    <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-                    Kembali
-                </Link>
-
-                <div className="mb-10 text-center md:text-left">
-                    <div className="inline-flex p-3 rounded-2xl bg-pink-50 text-pink-600 mb-6">
-                        <Heart size={28} />
-                    </div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">Selamat Datang!</h1>
-                    <p className="text-slate-500 font-medium">Masuk ke sistem operasional Posyandu Anggrek Setia.</p>
+            {/* --- SISI KIRI: FORM LOGIN --- */}
+            <div className="w-full md:w-[45%] lg:w-[40%] flex flex-col justify-center px-8 sm:px-16 lg:px-24 bg-white z-10 py-12">
+                
+                {/* Back Button - Disesuaikan posisinya agar di bawah Topbar GuestLayout */}
+                <div className="mb-8">
+                    <Link href="/" className="group inline-flex items-center gap-2 text-slate-400 hover:text-blue-900 transition-all font-black text-[10px] uppercase tracking-[0.2em]">
+                        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Kembali
+                    </Link>
                 </div>
 
-                {status && <div className="mb-4 font-medium text-sm text-green-600 italic bg-green-50 p-3 rounded-xl border border-green-100">{status}</div>}
-
-                <form onSubmit={submit} className="space-y-6">
-                    <div>
-                        <InputLabel htmlFor="email" value="Email Petugas / Kader" className="text-slate-700 font-bold mb-2 ml-1" />
-                        <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-pink-600 transition-colors">
-                                <Mail size={20} />
-                            </div>
-                            <TextInput
-                                id="email"
-                                type="email"
-                                name="email"
-                                value={data.email}
-                                className="block w-full pl-12 pr-4 py-4 bg-slate-50 border-slate-200 rounded-2xl focus:ring-pink-500 focus:border-pink-500 transition-all"
-                                autoComplete="username"
-                                isFocused={true}
-                                onChange={(e) => setData('email', e.target.value)}
-                                placeholder="nama@email.com"
-                            />
-                        </div>
-                        <InputError message={errors.email} className="mt-2" />
-                    </div>
-
-                    <div>
-                        <InputLabel htmlFor="password" value="Kata Sandi" className="text-slate-700 font-bold mb-2 ml-1" />
-                        <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-pink-600 transition-colors">
-                                <Lock size={20} />
-                            </div>
-                            <TextInput
-                                id="password"
-                                type="password"
-                                name="password"
-                                value={data.password}
-                                className="block w-full pl-12 pr-4 py-4 bg-slate-50 border-slate-200 rounded-2xl focus:ring-pink-500 focus:border-pink-500 transition-all"
-                                autoComplete="current-password"
-                                onChange={(e) => setData('password', e.target.value)}
-                                placeholder="••••••••"
-                            />
-                        </div>
-                        <InputError message={errors.password} className="mt-2" />
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                        <label className="flex items-center cursor-pointer group">
-                            <Checkbox
-                                name="remember"
-                                checked={data.remember}
-                                onChange={(e) => setData('remember', e.target.checked)}
-                                className="rounded text-pink-600 focus:ring-pink-500 border-slate-300"
-                            />
-                            <span className="ml-2 text-sm text-slate-500 group-hover:text-slate-700 transition">Ingat saya</span>
-                        </label>
-                        
-                        {canResetPassword && (
-                            <Link
-                                href={route('password.request')}
-                                className="text-sm font-bold text-pink-600 hover:text-pink-700 underline underline-offset-4"
-                            >
-                                Lupa sandi?
-                            </Link>
-                        )}
-                    </div>
-
-                    <div className="pt-2">
-                        <PrimaryButton 
-                            className="w-full py-4 bg-slate-900 hover:bg-pink-600 justify-center rounded-2xl text-lg font-black tracking-wide shadow-xl shadow-slate-200 hover:shadow-pink-200 transition-all active:scale-[0.98]" 
-                            disabled={processing}
-                        >
-                            <LogIn className="mr-2" size={20} />
-                            Masuk Sekarang
-                        </PrimaryButton>
-                    </div>
-
-                    <p className="text-center text-sm font-medium text-slate-500 mt-8">
-                        Belum punya akun?{' '}
-                        <Link href={route('register')} className="text-pink-600 font-black hover:underline underline-offset-4">
-                            Daftar di sini
-                        </Link>
-                    </p>
-                </form>
-            </motion.div>
-
-            {/* --- SISI KANAN: VISUAL --- */}
-            <div className="hidden md:flex flex-1 bg-slate-900 relative items-center justify-center overflow-hidden">
-                {/* Decorative background */}
-                <div className="absolute top-0 right-0 w-full h-full opacity-30">
-                    <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-pink-600 rounded-full blur-[150px]" />
-                    <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-blue-600 rounded-full blur-[150px]" />
-                </div>
-
-                <div className="relative z-10 p-12 text-center max-w-lg">
-                    <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.3, duration: 0.8 }}
-                    >
-                        <div className="inline-flex p-4 rounded-3xl bg-white/10 backdrop-blur-md mb-8 border border-white/20 shadow-2xl">
-                            <Sparkles className="text-pink-400" size={48} />
-                        </div>
-                        <h2 className="text-4xl font-black text-white mb-6 leading-tight tracking-tighter">
-                            "Kesehatan anak adalah investasi terbesar masa depan."
-                        </h2>
-                        <div className="w-20 h-1.5 bg-pink-600 mx-auto rounded-full mb-6" />
-                        <p className="text-slate-400 text-lg font-medium italic">
-                            — Anggrek Setia Team
-                        </p>
-                    </motion.div>
-                </div>
-
-                {/* Glassmorphism Badge */}
                 <motion.div 
-                    animate={{ y: [0, -20, 0] }}
-                    transition={{ duration: 6, repeat: Infinity }}
-                    className="absolute bottom-12 right-12 bg-white/5 backdrop-blur-xl p-6 rounded-[2rem] border border-white/10 flex items-center gap-4 shadow-2xl"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="w-full max-w-sm mx-auto"
                 >
-                    <div className="w-12 h-12 bg-pink-600 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-pink-900/20 italic text-xl">
-                        A
+                    {/* Brand Header */}
+                    <div className="mb-10">
+                        <div className="w-14 h-14 bg-blue-900 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-100 mb-8">
+                            <Flower2 size={32} />
+                        </div>
+                        <h2 className="text-4xl font-black text-blue-950 tracking-tighter leading-none">
+                            Akses <br/> <span className="text-blue-600">Petugas.</span>
+                        </h2>
+                        <p className="text-slate-400 text-sm font-medium mt-4 leading-relaxed">
+                            Sistem Informasi Posyandu (SIP) Terpadu <br/>
+                            <strong>Anggrek Setia</strong> Kota Tangerang.
+                        </p>
                     </div>
-                    <div className="text-left text-white">
-                        <p className="text-xs font-bold uppercase tracking-[0.2em] opacity-60">Posyandu Digital</p>
-                        <p className="text-sm font-black tracking-tight uppercase">Sistem Terintegrasi</p>
+
+                    {status && <div className="mb-4 font-medium text-sm text-green-600">{status}</div>}
+
+                    <form onSubmit={submit} className="space-y-6">
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Instansi</label>
+                            <div className="relative">
+                                <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-300">
+                                    <User size={18} />
+                                </span>
+                                <input
+                                    type="email"
+                                    value={data.email}
+                                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-xl text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-600/20 transition-all placeholder:text-slate-300"
+                                    placeholder="nama@tangerangkota.go.id"
+                                    onChange={(e) => setData('email', e.target.value)}
+                                />
+                            </div>
+                            {errors.email && <p className="text-red-500 text-[10px] font-bold uppercase mt-1 ml-1">{errors.email}</p>}
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Kata Sandi</label>
+                            <div className="relative">
+                                <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-300">
+                                    <Lock size={18} />
+                                </span>
+                                <input
+                                    type="password"
+                                    value={data.password}
+                                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-xl text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-600/20 transition-all placeholder:text-slate-300"
+                                    placeholder="••••••••"
+                                    onChange={(e) => setData('password', e.target.value)}
+                                />
+                            </div>
+                            {errors.password && <p className="text-red-500 text-[10px] font-bold uppercase mt-1 ml-1">{errors.password}</p>}
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                            <label className="flex items-center gap-2 cursor-pointer group">
+                                <input 
+                                    type="checkbox" 
+                                    className="rounded border-slate-300 text-blue-900 focus:ring-blue-900/20 w-4 h-4"
+                                    checked={data.remember}
+                                    onChange={(e) => setData('remember', e.target.checked)}
+                                />
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-slate-600">Ingat Saya</span>
+                            </label>
+                            {canResetPassword && (
+                                <Link href={route('password.request')} className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:text-blue-800">
+                                    Lupa Sandi?
+                                </Link>
+                            )}
+                        </div>
+
+                        <button 
+                            disabled={processing}
+                            className="w-full bg-blue-900 hover:bg-blue-950 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-100 transition-all active:scale-[0.98] disabled:opacity-70"
+                        >
+                            {processing ? 'Memverifikasi...' : 'Masuk ke Sistem'}
+                        </button>
+                    </form>
+
+                    <div className="mt-12 flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                        <ShieldCheck size={20} className="text-emerald-500 shrink-0" />
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
+                            Koneksi dienkripsi secara aman oleh server <br/> <span className="text-slate-600">Pemerintah Kota Tangerang</span>
+                        </p>
                     </div>
                 </motion.div>
+            </div>
+
+            {/* --- SISI KANAN: BRANDING --- */}
+            <div className="hidden md:flex flex-1 bg-[#002d5f] relative items-center justify-center p-12 overflow-hidden">
+                <div className="absolute inset-0 opacity-5 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/graphy.png')]"></div>
+                <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-blue-600 rounded-full blur-[150px] opacity-20 animate-pulse"></div>
+
+                <div className="relative z-10 text-center space-y-8 max-w-lg">
+                    <motion.div 
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="inline-block p-8 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[3rem] shadow-2xl mb-4"
+                    >
+                        <img 
+                            src="https://tangerangkota.go.id/favicon.ico" 
+                            className="w-24 h-24 mx-auto brightness-0 invert opacity-90"
+                            alt="Logo Kota Tangerang" 
+                        />
+                    </motion.div>
+                    
+                    <div className="space-y-3">
+                        <h3 className="text-4xl font-black text-white tracking-tighter uppercase">
+                            Tangerang <span className="text-blue-400 italic">Ayo!</span>
+                        </h3>
+                        <div className="h-1 w-20 bg-blue-500 mx-auto rounded-full"></div>
+                        <p className="text-blue-100/60 text-[10px] font-black uppercase tracking-[0.5em]">
+                            Dinas Kesehatan Kota Tangerang
+                        </p>
+                    </div>
+
+                    <div className="flex justify-center gap-4 pt-8">
+                        <div className="px-6 py-3 bg-white/5 rounded-full border border-white/10 flex items-center gap-2">
+                            <CheckCircle2 size={14} className="text-emerald-400" />
+                            <span className="text-[10px] font-black text-white uppercase tracking-widest">Server Utama Aktif</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="absolute bottom-10 text-center">
+                    <p className="text-blue-100/20 text-[10px] font-black uppercase tracking-[0.3em]">
+                        SIP-TERPADU v2.0 • 2026
+                    </p>
+                </div>
             </div>
         </div>
     );
 }
+
+// WAJIB: Hubungkan ke GuestLayout
+Login.layout = (page) => <GuestLayout children={page} />;

@@ -1,261 +1,176 @@
 import { Link, Head } from '@inertiajs/react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
-    Baby, Calendar, ClipboardCheck, Heart, LayoutDashboard, 
-    MapPin, Phone, ChevronRight, Users, ArrowRight, Sparkles,
-    Activity, ShieldCheck, Star, Bell, Search
+    ShieldCheck, 
+    ArrowRight, 
+    Lock,
+    MapPin,
+    Flower2,
+    Activity,
+    Users,
+    ChevronRight
 } from 'lucide-react';
 
 export default function Welcome({ auth }) {
-    // Variabel Animasi
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: { 
-            opacity: 1,
-            transition: { staggerChildren: 0.15 }
-        }
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 30 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
-    };
-
     return (
         <>
-            <Head title="Posyandu Anggrek Setia - Modern Healthcare" />
-            
-            <div className="min-h-screen bg-[#fafafa] text-slate-900 font-sans selection:bg-pink-100 selection:text-pink-600 overflow-x-hidden">
+            <Head title="Posyandu Anggrek Setia - Portal Resmi Kota Tangerang" />
+            <div className="min-h-screen bg-white font-sans selection:bg-blue-600 selection:text-white">
                 
-                {/* --- BACKGROUND ORNAMENT --- */}
-                <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-                    <motion.div 
-                        animate={{ x: [0, 50, 0], y: [0, 30, 0], scale: [1, 1.1, 1] }}
-                        transition={{ duration: 15, repeat: Infinity }}
-                        className="absolute -top-[10%] -right-[5%] w-[600px] h-[600px] bg-pink-100/40 rounded-full blur-[120px]" 
-                    />
-                    <motion.div 
-                        animate={{ x: [0, -40, 0], y: [0, 60, 0] }}
-                        transition={{ duration: 20, repeat: Infinity }}
-                        className="absolute top-[40%] -left-[10%] w-[500px] h-[500px] bg-blue-100/30 rounded-full blur-[100px]" 
-                    />
+                {/* --- TOPBAR RESMI --- */}
+                <div className="bg-[#002d5f] py-2 px-6">
+                    <div className="max-w-7xl mx-auto flex justify-between items-center">
+                        <p className="text-[10px] font-bold text-white uppercase tracking-[0.2em] flex items-center gap-2">
+                            <ShieldCheck size={12} className="text-blue-400" /> Portal Resmi Pemerintah Kota Tangerang
+                        </p>
+                        <div className="flex gap-4">
+                            <span className="text-[10px] font-bold text-blue-200 uppercase tracking-widest">Dinas Kesehatan</span>
+                        </div>
+                    </div>
                 </div>
 
-                {/* --- STICKY NAVIGATION --- */}
-                <nav className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-white/20">
+                {/* --- NAVIGATION --- */}
+                <nav className="bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-50">
                     <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-                        <Link href="/" className="flex items-center gap-2 group">
-                            <motion.div 
-                                whileHover={{ rotate: 15 }}
-                                className="bg-gradient-to-br from-pink-500 to-rose-600 p-2 rounded-xl shadow-lg shadow-pink-200"
-                            >
-                                <Heart className="text-white" size={24} />
-                            </motion.div>
-                            <span className="text-2xl font-black tracking-tighter text-slate-800 uppercase">
-                                Anggrek<span className="text-pink-600 underline decoration-pink-200 decoration-4 underline-offset-4">Setia</span>
-                            </span>
-                        </Link>
-                        
-                        <div className="hidden md:flex items-center gap-8 font-bold text-sm text-slate-600">
-                            <a href="#layanan" className="hover:text-pink-600 transition">Layanan</a>
-                            <a href="#jadwal" className="hover:text-pink-600 transition">Jadwal</a>
-                            <a href="#faq" className="hover:text-pink-600 transition">Bantuan</a>
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-100">
+                                <Flower2 size={24} />
+                            </div>
+                            <div>
+                                <h1 className="text-[#002d5f] font-black text-base uppercase tracking-tighter leading-none">
+                                    Anggrek Setia
+                                </h1>
+                                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.1em] mt-1">
+                                    Sistem Informasi Posyandu Terpadu
+                                </p>
+                            </div>
                         </div>
 
                         <div className="flex items-center gap-4">
                             {auth.user ? (
-                                <Link href={route('dashboard')} className="px-6 py-2.5 rounded-2xl bg-slate-900 text-white font-bold hover:shadow-xl hover:shadow-slate-200 transition-all flex items-center gap-2 active:scale-95">
-                                    <LayoutDashboard size={18} /> Dashboard
+                                <Link href={route('dashboard')} className="flex items-center gap-2 bg-[#002d5f] text-white px-6 py-2.5 rounded-md font-bold text-[11px] uppercase tracking-widest hover:bg-blue-700 transition-all">
+                                    Dashboard <ChevronRight size={14} />
                                 </Link>
                             ) : (
-                                <>
-                                    <Link href={route('login')} className="hidden sm:block text-slate-600 font-bold hover:text-pink-600 transition">Masuk</Link>
-                                    <Link href={route('register')} className="px-6 py-3 rounded-2xl bg-pink-600 text-white font-bold hover:bg-pink-700 hover:shadow-lg shadow-pink-200 transition flex items-center gap-2 active:scale-95">
-                                        Daftar <ArrowRight size={18} />
-                                    </Link>
-                                </>
+                                <Link href={route('login')} className="flex items-center gap-2 border-2 border-[#002d5f] text-[#002d5f] px-6 py-2 rounded-md font-bold text-[11px] uppercase tracking-widest hover:bg-[#002d5f] hover:text-white transition-all">
+                                    <Lock size={14} /> Login Petugas
+                                </Link>
                             )}
                         </div>
                     </div>
                 </nav>
 
-                {/* --- HERO SECTION --- */}
-                <section className="relative pt-16 pb-20 px-6">
-                    <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
-                        <motion.div 
-                            initial="hidden" animate="visible" variants={containerVariants}
-                            className="lg:col-span-7"
-                        >
-                            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-pink-100 shadow-sm text-pink-600 text-xs font-bold uppercase tracking-widest mb-6">
-                                <Sparkles size={14} className="animate-pulse" /> Digitalisasi Posyandu RW 05
-                            </motion.div>
-                            <motion.h1 variants={itemVariants} className="text-6xl sm:text-8xl font-black text-slate-900 leading-[0.9] mb-8 tracking-tighter">
-                                Tumbuh Sehat, <br /> 
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-rose-500 italic">Masa Depan</span> Hebat.
-                            </motion.h1>
-                            <motion.p variants={itemVariants} className="text-xl text-slate-500 leading-relaxed mb-10 max-w-lg">
-                                Selamat datang di portal resmi Posyandu Anggrek Setia. Kami hadir untuk memastikan setiap anak mendapatkan pemantauan gizi dan kesehatan terbaik.
-                            </motion.p>
-                            <motion.div variants={itemVariants} className="flex flex-wrap gap-4">
-                                <a href="#jadwal" className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-lg hover:scale-105 transition shadow-2xl shadow-slate-200">
-                                    Cek Jadwal Rutin
-                                </a>
-                                <div className="flex items-center gap-4 px-6 py-4 bg-white border border-slate-100 rounded-2xl shadow-sm">
-                                    <div className="flex -space-x-3">
-                                        {[1,2,3].map(i => (
-                                            <img key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-100" src={`https://i.pravatar.cc/100?img=${i+20}`} />
-                                        ))}
-                                    </div>
-                                    <span className="text-sm font-bold text-slate-600 tracking-tight">150+ Ibu Terdaftar</span>
+                <main>
+                    {/* --- HERO SECTION --- */}
+                    <section className="relative py-24 lg:py-32 border-b border-slate-50">
+                        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+                            <motion.div 
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.8 }}
+                                className="space-y-8"
+                            >
+                                <div className="space-y-4">
+                                    <h2 className="text-5xl lg:text-6xl font-black text-[#002d5f] leading-[1.1] tracking-tight">
+                                        Layanan Kesehatan <br/>
+                                        <span className="text-blue-600">Berbasis Digital.</span>
+                                    </h2>
+                                    <p className="text-lg text-slate-500 font-medium leading-relaxed max-w-lg">
+                                        Selamat datang di portal resmi <strong>Posyandu Anggrek Setia</strong>. Kami berkomitmen memberikan transparansi data tumbuh kembang anak bagi masyarakat Kota Tangerang.
+                                    </p>
+                                </div>
+
+                                <div className="flex flex-wrap gap-4">
+                                    <Link href={route('login')} className="bg-blue-600 text-white px-8 py-4 rounded-md font-bold text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-100 hover:bg-[#002d5f] transition-all">
+                                        Mulai Pendataan
+                                    </Link>
+                                    <button className="flex items-center gap-2 px-8 py-4 text-[#002d5f] font-bold text-xs uppercase tracking-[0.2em] hover:bg-slate-50 rounded-md transition-all">
+                                        Pelajari Alur <ArrowRight size={16} />
+                                    </button>
                                 </div>
                             </motion.div>
-                        </motion.div>
 
-                        <motion.div 
-                            initial={{ opacity: 0, x: 50 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.8 }}
-                            className="lg:col-span-5 relative"
-                        >
-                            <div className="relative z-10 p-4 bg-white rounded-[3rem] shadow-2xl border border-slate-50 overflow-hidden group">
-                                <img 
-                                    src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=800&auto=format&fit=crop" 
-                                    className="rounded-[2.5rem] w-full h-[500px] object-cover group-hover:scale-105 transition duration-700" 
-                                    alt="Health Professional" 
-                                />
-                                <motion.div 
-                                    animate={{ y: [0, -15, 0] }} transition={{ duration: 5, repeat: Infinity }}
-                                    className="absolute top-10 right-10 bg-white/90 backdrop-blur p-4 rounded-2xl shadow-xl border border-white/50 flex items-center gap-3"
-                                >
-                                    <div className="p-2 bg-pink-100 rounded-lg text-pink-600"><ShieldCheck size={20}/></div>
-                                    <span className="font-black text-xs uppercase tracking-wider">Terverifikasi Dinkes</span>
-                                </motion.div>
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 1 }}
+                                className="relative lg:block hidden"
+                            >
+                                <div className="bg-slate-100 rounded-2xl overflow-hidden shadow-inner border border-slate-200">
+                                    <img 
+                                        src="https://images.unsplash.com/photo-1531973576160-7125cd663d86?q=80&w=1000" 
+                                        className="mix-blend-multiply opacity-80"
+                                        alt="Modern Office" 
+                                    />
+                                </div>
+                            </motion.div>
+                        </div>
+                    </section>
+
+                    {/* --- LAYANAN UTAMA (CARDS) --- */}
+                    <section className="py-24 max-w-7xl mx-auto px-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-slate-100 rounded-xl overflow-hidden shadow-sm">
+                            <div className="p-12 bg-white border-r border-slate-100 hover:bg-slate-50 transition-colors">
+                                <Users className="text-blue-600 mb-6" size={32} />
+                                <h4 className="font-bold text-[#002d5f] uppercase text-sm tracking-widest mb-4">Manajemen Data</h4>
+                                <p className="text-slate-500 text-sm leading-relaxed font-medium">Pengelolaan database balita yang aman dan terintegrasi dengan NIK Kota Tangerang.</p>
                             </div>
-                        </motion.div>
-                    </div>
-                </section>
-
-                {/* --- BENTO GRID FEATURES --- */}
-                <section id="layanan" className="py-20 px-6 max-w-7xl mx-auto">
-                    <div className="grid md:grid-cols-4 md:grid-rows-2 gap-6 h-auto md:h-[600px]">
-                        <motion.div whileHover={{ scale: 1.02 }} className="md:col-span-2 row-span-2 bg-gradient-to-br from-pink-500 to-rose-600 rounded-[3rem] p-12 text-white flex flex-col justify-end relative overflow-hidden group cursor-pointer shadow-2xl shadow-pink-200">
-                            <Baby size={180} className="absolute -top-10 -right-10 opacity-20 group-hover:rotate-12 transition-transform duration-500" />
-                            <h3 className="text-5xl font-black mb-4 tracking-tighter">E-KMS <br /> Digital</h3>
-                            <p className="opacity-80 text-lg max-w-xs leading-snug font-medium">Lupakan buku fisik. Pantau grafik pertumbuhan berat dan tinggi badan si kecil langsung dari smartphone Bunda.</p>
-                        </motion.div>
-                        
-                        <motion.div whileHover={{ scale: 1.02 }} className="md:col-span-2 bg-blue-500 rounded-[3rem] p-8 text-white flex items-center gap-6 shadow-xl shadow-blue-100 cursor-pointer">
-                            <div className="bg-white/20 p-5 rounded-3xl"><Bell size={32} /></div>
-                            <div>
-                                <h4 className="text-2xl font-black tracking-tight">Pengingat Otomatis</h4>
-                                <p className="opacity-80 font-medium leading-tight text-sm">Notifikasi otomatis jadwal imunisasi dan vitamin A via WhatsApp.</p>
+                            <div className="p-12 bg-white border-r border-slate-100 hover:bg-slate-50 transition-colors">
+                                <Activity className="text-blue-600 mb-6" size={32} />
+                                <h4 className="font-bold text-[#002d5f] uppercase text-sm tracking-widest mb-4">Monitoring Gizi</h4>
+                                <p className="text-slate-500 text-sm leading-relaxed font-medium">Pemantauan grafik KMS digital secara periodik untuk memastikan kesehatan anak.</p>
                             </div>
-                        </motion.div>
+                            <div className="p-12 bg-white hover:bg-slate-50 transition-colors">
+                                <ShieldCheck className="text-blue-600 mb-6" size={32} />
+                                <h4 className="font-bold text-[#002d5f] uppercase text-sm tracking-widest mb-4">Akses Terpusat</h4>
+                                <p className="text-slate-500 text-sm leading-relaxed font-medium">Layanan satu pintu bagi kader dan instansi kesehatan untuk pelaporan efisien.</p>
+                            </div>
+                        </div>
+                    </section>
+                </main>
 
-                        <motion.div whileHover={{ scale: 1.02 }} className="bg-emerald-500 rounded-[3rem] p-8 text-white flex flex-col justify-between shadow-xl shadow-emerald-100 cursor-pointer">
-                            <ClipboardCheck size={32} />
-                            <h4 className="text-xl font-black leading-tight tracking-tight">Catatan Vaksinasi Terstruktur</h4>
-                        </motion.div>
-
-                        <motion.div whileHover={{ scale: 1.02 }} className="bg-slate-900 rounded-[3rem] p-8 text-white flex flex-col justify-between shadow-xl shadow-slate-200 cursor-pointer">
-                            <Users size={32} className="text-pink-500" />
-                            <h4 className="text-xl font-black leading-tight tracking-tight text-white">Konsultasi Kader Terpadu</h4>
-                        </motion.div>
-                    </div>
-                </section>
-
-                {/* --- JADWAL SECTION --- */}
-                <section id="jadwal" className="py-20 px-6">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="bg-white rounded-[3.5rem] p-8 md:p-16 border border-slate-100 shadow-2xl flex flex-col md:flex-row items-center gap-12 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-bl-[5rem] -z-0" />
-                            <div className="z-10 text-center md:text-left flex-1">
-                                <div className="inline-block px-4 py-1.5 bg-pink-100 text-pink-600 rounded-full text-xs font-black uppercase mb-4">Jadwal Terdekat</div>
-                                <h2 className="text-4xl font-black text-slate-900 mb-2">12 Februari 2026</h2>
-                                <p className="text-slate-500 font-bold mb-6 flex items-center justify-center md:justify-start gap-2">
-                                    <MapPin size={18} className="text-pink-600" /> Balai Warga RW 05 (08:00 - 11:00)
+                {/* --- FOOTER FORMAL --- */}
+                <footer className="bg-slate-50 py-20 border-t border-slate-200">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <div className="flex flex-col md:flex-row justify-between items-start gap-12">
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 bg-[#002d5f] rounded flex items-center justify-center text-white">
+                                        <Flower2 size={18} />
+                                    </div>
+                                    <h5 className="font-black text-[#002d5f] uppercase text-xs tracking-widest">Posyandu Anggrek Setia</h5>
+                                </div>
+                                <p className="text-slate-400 text-xs leading-relaxed max-w-xs font-medium">
+                                    Unit Pelayanan Teknis Kesehatan RW 05, <br/>
+                                    Kecamatan Tangerang, Kota Tangerang.
                                 </p>
-                                <ul className="space-y-3 mb-8">
-                                    {['Penimbangan Berat Badan', 'Pengukuran Tinggi Badan', 'Pemberian Vitamin A'].map((item, i) => (
-                                        <li key={i} className="flex items-center gap-3 font-bold text-slate-700">
-                                            <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center"><div className="w-2 h-2 rounded-full bg-green-500" /></div>
-                                            {item}
-                                        </li>
-                                    ))}
-                                </ul>
-                                <button className="w-full md:w-auto px-10 py-4 bg-pink-600 text-white rounded-2xl font-black hover:bg-pink-700 transition shadow-lg shadow-pink-100">
-                                    Simpan di Kalender
-                                </button>
                             </div>
-                            <div className="bg-slate-50 p-10 rounded-[3rem] border border-slate-100 hidden lg:block">
-                                <Calendar size={100} className="text-slate-200" />
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* --- LIVE STATS --- */}
-                <section className="py-20 bg-white">
-                    <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-                        {[
-                            { l: "Bayi Sehat", v: "150", i: <Baby />, c: "text-pink-500" },
-                            { l: "Imunisasi Lunas", v: "98%", i: <ShieldCheck />, c: "text-blue-500" },
-                            { l: "Kader Aktif", v: "12", i: <Users />, c: "text-emerald-500" },
-                            { l: "Tahun Melayani", v: "8+", i: <Star />, c: "text-orange-500" }
-                        ].map((s, i) => (
-                            <motion.div key={i} initial={{ opacity:0 }} whileInView={{ opacity:1 }} className="text-center">
-                                <div className={`inline-flex mb-4 ${s.c}`}>{s.i}</div>
-                                <div className="text-4xl font-black text-slate-900">{s.v}</div>
-                                <div className="text-xs font-black text-slate-400 uppercase tracking-widest">{s.l}</div>
-                            </motion.div>
-                        ))}
-                    </div>
-                </section>
-
-                {/* --- FAQ SECTION --- */}
-                <section id="faq" className="py-24 px-6 bg-slate-50">
-                    <div className="max-w-3xl mx-auto">
-                        <h2 className="text-4xl font-black text-center mb-12 tracking-tight">Ada Pertanyaan?</h2>
-                        <div className="space-y-4">
-                            {[
-                                { q: "Apa saja syarat pendaftaran balita baru?", a: "Cukup bawa fotokopi KK dan Buku KIA (Buku Pink) saat jadwal Posyandu berlangsung." },
-                                { q: "Bagaimana jika saya lupa membawa buku KIA?", a: "Data tetap bisa dicatat oleh kader di sistem digital ini, namun buku fisik tetap disarankan untuk dibawa." },
-                                { q: "Apakah layanan ini berbayar?", a: "Seluruh layanan Posyandu Anggrek Setia tidak dipungut biaya (GRATIS)." }
-                            ].map((f, i) => (
-                                <details key={i} className="group bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden transition-all duration-300">
-                                    <summary className="flex justify-between items-center p-7 cursor-pointer font-black text-slate-800 list-none">
-                                        {f.q}
-                                        <ChevronRight size={20} className="text-pink-600 group-open:rotate-90 transition-transform" />
-                                    </summary>
-                                    <div className="px-7 pb-7 text-slate-500 font-medium leading-relaxed border-t border-slate-50 pt-4">
-                                        {f.a}
-                                    </div>
-                                </details>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* --- FOOTER --- */}
-                <footer className="bg-white border-t border-slate-100 py-16 px-6">
-                    <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
-                        <div>
-                            <div className="flex items-center gap-2 mb-4 justify-center md:justify-start">
-                                <div className="bg-pink-600 p-1.5 rounded-lg text-white"><Heart size={18} /></div>
-                                <span className="text-xl font-black tracking-tighter uppercase">Anggrek Setia</span>
-                            </div>
-                            <p className="text-slate-400 text-sm max-w-xs text-center md:text-left">Mewujudkan lingkungan RW 05 yang sehat, cerdas, dan tanggap terhadap tumbuh kembang anak.</p>
-                        </div>
-                        <div className="flex flex-col items-center md:items-end gap-4">
-                            <div className="flex gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-pink-50 hover:text-pink-600 transition cursor-pointer">
-                                    <Phone size={20} />
+                            
+                            <div className="grid grid-cols-2 gap-16">
+                                <div>
+                                    <h6 className="font-bold text-[#002d5f] text-[10px] uppercase tracking-[0.2em] mb-4">Navigasi</h6>
+                                    <ul className="text-slate-400 text-xs space-y-2 font-bold uppercase">
+                                        <li><a href="#" className="hover:text-blue-600">Beranda</a></li>
+                                        <li><a href="#" className="hover:text-blue-600">Statistik</a></li>
+                                    </ul>
                                 </div>
-                                <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition cursor-pointer">
-                                    <MapPin size={20} />
+                                <div>
+                                    <h6 className="font-bold text-[#002d5f] text-[10px] uppercase tracking-[0.2em] mb-4">Kontak</h6>
+                                    <ul className="text-slate-400 text-xs space-y-2 font-bold uppercase">
+                                        <li className="flex items-center gap-2"><MapPin size={12}/> Kota Tangerang</li>
+                                    </ul>
                                 </div>
                             </div>
-                            <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">© 2026 Posyandu Digital System</span>
+                        </div>
+                        
+                        <div className="mt-20 pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                © 2026 Pemerintah Kota Tangerang. All Rights Reserved.
+                            </p>
+                            <div className="flex gap-6">
+                                <div className="w-6 h-6 bg-slate-200 rounded-full opacity-50"></div>
+                                <div className="w-6 h-6 bg-slate-200 rounded-full opacity-50"></div>
+                            </div>
                         </div>
                     </div>
                 </footer>

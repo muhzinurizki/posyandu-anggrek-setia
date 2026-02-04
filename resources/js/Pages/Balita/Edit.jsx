@@ -1,6 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, useForm, Link } from "@inertiajs/react";
-import { ChevronLeft, Save, Edit3, Scale, Ruler, Calendar, User } from "lucide-react";
+import { ChevronLeft, Save, Edit3, Scale, Ruler, FileText, User, Calendar } from "lucide-react";
 import TextInput from "@/Components/TextInput";
 import InputLabel from "@/Components/InputLabel";
 import InputError from "@/Components/InputError";
@@ -23,62 +23,76 @@ export default function Edit({ auth, balita }) {
     };
 
     return (
-        <AuthenticatedLayout user={auth.user} header={<h2 className="text-xl font-black text-slate-800">Edit Data Balita</h2>}>
+        <AuthenticatedLayout 
+            user={auth.user} 
+            header={
+                <div className="flex items-center gap-3">
+                    <FileText className="text-slate-500" size={20} />
+                    <h2 className="text-xl font-bold text-slate-800 tracking-tight">Edit Data Administrasi</h2>
+                </div>
+            }
+        >
             <Head title={`Edit - ${balita.nama_balita}`} />
 
-            <div className="max-w-4xl mx-auto p-4 md:p-8">
-                <Link href={route("balita.index")} className="inline-flex items-center gap-2 text-slate-400 hover:text-indigo-600 font-bold text-xs mb-6 transition-all group">
-                    <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> KEMBALI KE DATABASE
+            <div className="max-w-4xl mx-auto py-8 px-4">
+                {/* Navigasi Kembali */}
+                <Link 
+                    href={route("balita.index")} 
+                    className="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 font-bold text-xs mb-6 transition-colors uppercase tracking-widest"
+                >
+                    <ChevronLeft size={16} /> Kembali ke Daftar Data
                 </Link>
 
-                <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-indigo-100 border border-slate-100 overflow-hidden">
-                    {/* Header Bagian Edit */}
-                    <div className="bg-indigo-600 p-8 text-white flex justify-between items-center">
+                <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+                    {/* Header Form - Gaya Instansi */}
+                    <div className="bg-slate-50 border-b border-slate-200 p-6">
                         <div className="flex items-center gap-4">
-                            <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-md">
-                                <Edit3 size={24} />
+                            <div className="bg-slate-800 p-2.5 rounded-md text-white">
+                                <Edit3 size={20} />
                             </div>
                             <div>
-                                <h1 className="text-xl font-black uppercase tracking-tight">Perbarui Informasi</h1>
-                                <p className="text-indigo-100 text-[10px] font-bold uppercase tracking-widest mt-1">ID Balita: #{balita.id}</p>
+                                <h1 className="text-lg font-bold text-slate-800 tracking-tight">Perbarui Informasi Balita</h1>
+                                <p className="text-slate-500 text-[11px] font-medium mt-0.5 uppercase tracking-wider italic">ID Registrasi: #{balita.id}</p>
                             </div>
                         </div>
                     </div>
 
                     <form onSubmit={submit} className="p-8 space-y-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                            {/* Section: Identitas */}
+                            
+                            {/* Identitas Dasar */}
                             <div className="md:col-span-2 flex items-center gap-2 border-b border-slate-100 pb-2">
-                                <User size={14} className="text-indigo-600" />
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Identitas Dasar</h3>
+                                <User size={14} className="text-slate-400" />
+                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Identitas Dasar</h3>
                             </div>
 
                             <div className="md:col-span-2">
-                                <InputLabel value="Nama Lengkap Balita" className="ml-1 mb-2" />
+                                <InputLabel value="Nama Lengkap Balita" className="text-[11px] font-bold uppercase text-slate-500 mb-2" />
                                 <TextInput
-                                    className="w-full bg-slate-50 border-none rounded-2xl py-3.5 focus:ring-2 focus:ring-indigo-500/10 shadow-sm"
+                                    className="w-full border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2.5"
                                     value={data.nama_balita}
                                     onChange={(e) => setData("nama_balita", e.target.value)}
                                     required
                                 />
-                                <InputError message={errors.nama_balita} />
+                                <InputError message={errors.nama_balita} className="mt-2" />
                             </div>
 
                             <div>
-                                <InputLabel value="NIK (16 Digit)" className="ml-1 mb-2" />
+                                <InputLabel value="Nomor Induk Kependudukan (NIK)" className="text-[11px] font-bold uppercase text-slate-500 mb-2" />
                                 <TextInput
-                                    className="w-full bg-slate-50 border-none rounded-2xl py-3.5 shadow-sm"
+                                    type="number"
+                                    className="w-full border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2.5"
                                     value={data.nik}
                                     onChange={(e) => setData("nik", e.target.value)}
                                     required
                                 />
-                                <InputError message={errors.nik} />
+                                <InputError message={errors.nik} className="mt-2" />
                             </div>
 
                             <div>
-                                <InputLabel value="Jenis Kelamin" className="ml-1 mb-2" />
+                                <InputLabel value="Jenis Kelamin" className="text-[11px] font-bold uppercase text-slate-500 mb-2" />
                                 <select
-                                    className="w-full bg-slate-50 border-none rounded-2xl py-3.5 text-sm focus:ring-2 focus:ring-indigo-500/10 shadow-sm"
+                                    className="w-full border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2.5 bg-white"
                                     value={data.jenis_kelamin}
                                     onChange={(e) => setData("jenis_kelamin", e.target.value)}
                                     required
@@ -88,17 +102,17 @@ export default function Edit({ auth, balita }) {
                                 </select>
                             </div>
 
-                            {/* Section: Kelahiran */}
+                            {/* Data Kelahiran */}
                             <div className="md:col-span-2 flex items-center gap-2 border-b border-slate-100 pb-2 mt-4">
-                                <Calendar size={14} className="text-indigo-600" />
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Data Kelahiran & Orang Tua</h3>
+                                <Calendar size={14} className="text-slate-400" />
+                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Kelahiran & Orang Tua</h3>
                             </div>
 
                             <div>
-                                <InputLabel value="Tanggal Lahir" className="ml-1 mb-2" />
+                                <InputLabel value="Tanggal Lahir" className="text-[11px] font-bold uppercase text-slate-500 mb-2" />
                                 <TextInput
                                     type="date"
-                                    className="w-full bg-slate-50 border-none rounded-2xl py-3.5 shadow-sm"
+                                    className="w-full border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2.5"
                                     value={data.tanggal_lahir}
                                     onChange={(e) => setData("tanggal_lahir", e.target.value)}
                                     required
@@ -106,24 +120,25 @@ export default function Edit({ auth, balita }) {
                             </div>
 
                             <div>
-                                <InputLabel value="Nama Ibu Kandung" className="ml-1 mb-2" />
+                                <InputLabel value="Nama Lengkap Ibu" className="text-[11px] font-bold uppercase text-slate-500 mb-2" />
                                 <TextInput
-                                    className="w-full bg-slate-50 border-none rounded-2xl py-3.5 shadow-sm"
+                                    className="w-full border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2.5"
                                     value={data.nama_ibu}
                                     onChange={(e) => setData("nama_ibu", e.target.value)}
                                     required
                                 />
                             </div>
 
-                            <div className="md:col-span-2 grid grid-cols-2 gap-6 p-6 bg-indigo-50/50 rounded-[2rem] border-2 border-dashed border-indigo-100">
+                            {/* Fisik Section */}
+                            <div className="md:col-span-2 grid grid-cols-2 gap-4 p-5 bg-slate-50 border border-slate-200 rounded-md shadow-inner">
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
-                                        <Scale size={16} className="text-indigo-600" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Berat Lahir (kg)</span>
+                                        <Scale size={14} className="text-slate-400" />
+                                        <InputLabel value="Berat (kg)" className="text-[11px] font-bold text-slate-600" />
                                     </div>
                                     <TextInput
                                         type="number" step="0.1"
-                                        className="w-full bg-white border-none rounded-xl py-3 shadow-sm"
+                                        className="w-full border-slate-300 rounded shadow-sm text-sm py-2"
                                         value={data.berat_badan_lahir}
                                         onChange={(e) => setData("berat_badan_lahir", e.target.value)}
                                         required
@@ -131,12 +146,12 @@ export default function Edit({ auth, balita }) {
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
-                                        <Ruler size={16} className="text-indigo-600" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Tinggi Lahir (cm)</span>
+                                        <Ruler size={14} className="text-slate-400" />
+                                        <InputLabel value="Tinggi (cm)" className="text-[11px] font-bold text-slate-600" />
                                     </div>
                                     <TextInput
                                         type="number" step="0.1"
-                                        className="w-full bg-white border-none rounded-xl py-3 shadow-sm"
+                                        className="w-full border-slate-300 rounded shadow-sm text-sm py-2"
                                         value={data.tinggi_badan_lahir}
                                         onChange={(e) => setData("tinggi_badan_lahir", e.target.value)}
                                         required
@@ -144,10 +159,11 @@ export default function Edit({ auth, balita }) {
                                 </div>
                             </div>
 
+                            {/* Alamat */}
                             <div className="md:col-span-2">
-                                <InputLabel value="Alamat Lengkap" className="ml-1 mb-2" />
+                                <InputLabel value="Alamat Domisili" className="text-[11px] font-bold uppercase text-slate-500 mb-2" />
                                 <textarea
-                                    className="w-full bg-slate-50 border-none rounded-2xl py-4 min-h-[100px] shadow-sm focus:ring-2 focus:ring-indigo-500/10"
+                                    className="w-full border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2.5 min-h-[100px]"
                                     value={data.alamat}
                                     onChange={(e) => setData("alamat", e.target.value)}
                                     required
@@ -155,14 +171,23 @@ export default function Edit({ auth, balita }) {
                             </div>
                         </div>
 
-                        <div className="pt-6 flex justify-between items-center border-t border-slate-50">
-                            <button type="button" onClick={() => window.history.back()} className="text-xs font-bold text-slate-400 hover:text-slate-600 uppercase tracking-widest">Batalkan Perubahan</button>
+                        {/* Submit Section */}
+                        <div className="pt-6 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                            <button 
+                                type="button" 
+                                onClick={() => window.history.back()} 
+                                className="text-[11px] font-bold text-slate-400 hover:text-red-600 uppercase tracking-widest transition-colors"
+                            >
+                                Batalkan Perubahan
+                            </button>
+                            
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-200 active:scale-95 disabled:opacity-50 flex items-center gap-3"
+                                className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-10 py-3 bg-slate-800 border border-transparent rounded-md font-bold text-xs text-white uppercase tracking-widest hover:bg-slate-700 active:bg-slate-900 transition duration-150 disabled:opacity-50 shadow-md"
                             >
-                                <Save size={18} /> {processing ? "Menyimpan..." : "Update Data Balita"}
+                                <Save size={16} />
+                                {processing ? "Menyimpan..." : "Perbarui Data"}
                             </button>
                         </div>
                     </form>

@@ -4,7 +4,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, useForm, Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { Mail, ArrowLeft, KeyRound, HelpCircle } from 'lucide-react';
+import { Mail, ArrowLeft, KeyRound, ShieldCheck } from 'lucide-react';
 
 export default function ForgotPassword({ status }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -17,86 +17,92 @@ export default function ForgotPassword({ status }) {
     };
 
     return (
-        <div className="min-h-screen bg-[#fafafa] flex items-center justify-center p-6 font-sans selection:bg-pink-100 selection:text-pink-600">
-            <Head title="Lupa Kata Sandi - Anggrek Setia" />
+        <div className="flex-1 flex flex-col items-center justify-center p-6 bg-white relative">
+            <Head title="Pemulihan Akses | Anggrek Setia" />
 
-            {/* Background Decoration */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-                <div className="absolute top-[-10%] left-[-10%] w-[400px] h-[400px] bg-pink-100/50 rounded-full blur-[100px]" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-blue-100/50 rounded-full blur-[100px]" />
+            {/* Tombol Kembali ke Login (Pojok Kiri Atas) */}
+            <div className="absolute top-8 left-8">
+                <Link 
+                    href={route('login')} 
+                    className="group flex items-center gap-2 text-slate-400 hover:text-[#002d5f] transition-all font-black text-[10px] uppercase tracking-[0.2em]"
+                >
+                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> 
+                    Kembali ke Login
+                </Link>
             </div>
 
             <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className="w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/60 p-8 md:p-12 border border-white relative overflow-hidden"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full max-w-md"
             >
-                {/* Decorative Icon */}
-                <div className="absolute -top-6 -right-6 w-32 h-32 bg-pink-50 rounded-full flex items-center justify-center text-pink-200">
-                    <KeyRound size={64} className="rotate-12 opacity-20" />
-                </div>
-
-                <Link href={route('login')} className="inline-flex items-center gap-2 text-slate-400 hover:text-pink-600 transition font-bold text-sm mb-8 group">
-                    <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-                    Kembali ke Login
-                </Link>
-
-                <div className="text-center mb-8 relative z-10">
-                    <div className="inline-flex p-4 rounded-3xl bg-pink-50 text-pink-600 mb-6 shadow-sm shadow-pink-100">
-                        <HelpCircle size={32} />
+                {/* Header Icon & Title */}
+                <div className="text-center mb-10">
+                    <div className="inline-flex p-5 rounded-3xl bg-blue-50 text-blue-900 mb-6 shadow-sm shadow-blue-100">
+                        <KeyRound size={32} />
                     </div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tighter mb-3">Lupa Kata Sandi?</h1>
-                    <p className="text-slate-500 text-sm leading-relaxed font-medium">
-                        Jangan khawatir! Masukkan alamat email Anda dan kami akan mengirimkan tautan pemulihan untuk mengatur ulang kata sandi Anda.
+                    <h1 className="text-3xl font-black text-[#002d5f] tracking-tighter mb-4 uppercase">
+                        Pemulihan <span className="text-blue-600">Akses.</span>
+                    </h1>
+                    <p className="text-slate-500 text-sm leading-relaxed font-medium px-4">
+                        Masukkan email dinas Anda yang terdaftar. Kami akan mengirimkan tautan pemulihan kata sandi secara aman.
                     </p>
                 </div>
 
+                {/* Status Message */}
                 {status && (
                     <motion.div 
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-700 text-sm font-bold text-center italic"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="mb-8 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-bold text-center italic"
                     >
                         {status}
                     </motion.div>
                 )}
 
-                <form onSubmit={submit} className="relative z-10">
-                    <div className="mb-6">
+                <form onSubmit={submit} className="space-y-6">
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                            Email Terdaftar
+                        </label>
                         <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-pink-600 transition-colors">
-                                <Mail size={20} />
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-300 group-focus-within:text-blue-600 transition-colors">
+                                <Mail size={18} />
                             </div>
                             <TextInput
                                 id="email"
                                 type="email"
                                 name="email"
                                 value={data.email}
-                                className="block w-full pl-12 pr-4 py-4 bg-slate-50 border-slate-200 rounded-2xl focus:ring-pink-500 focus:border-pink-500 transition-all shadow-sm"
+                                className="block w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-600/20 transition-all font-bold text-slate-700 text-sm"
                                 isFocused={true}
                                 onChange={(e) => setData('email', e.target.value)}
-                                placeholder="nama@email.com"
+                                placeholder="nama@tangerangkota.go.id"
                                 required
                             />
                         </div>
-                        <InputError message={errors.email} className="mt-2 ml-2" />
+                        <InputError message={errors.email} className="mt-2 ml-1" />
                     </div>
 
                     <PrimaryButton 
-                        className="w-full py-4 bg-slate-900 hover:bg-pink-600 justify-center rounded-2xl text-lg font-black tracking-wide shadow-xl shadow-slate-200 hover:shadow-pink-200 transition-all active:scale-[0.98]" 
+                        className="w-full py-4 bg-[#002d5f] hover:bg-blue-700 justify-center rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-100 transition-all active:scale-[0.98]" 
                         disabled={processing}
                     >
-                        Kirim Tautan Email
+                        {processing ? 'Memproses...' : 'Kirim Tautan Pemulihan'}
                     </PrimaryButton>
-
-                    <div className="mt-8 text-center">
-                        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">
-                            Posyandu Anggrek Setia Digital
-                        </p>
-                    </div>
                 </form>
+
+                {/* Footer Security Note */}
+                <div className="mt-12 flex items-center justify-center gap-3 py-4 border-t border-slate-50">
+                    <ShieldCheck size={16} className="text-emerald-500" />
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                        Otoritas Keamanan Kota Tangerang
+                    </p>
+                </div>
             </motion.div>
         </div>
     );
 }
+
+// Menggunakan GuestLayout yang sudah kita rontokkan sebelumnya
+ForgotPassword.layout = (page) => <GuestLayout children={page} />;
